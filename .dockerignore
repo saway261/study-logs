@@ -1,0 +1,12 @@
+.git
+.gitignore
+vendor
+node_modules
+var
+
+# Docker Compose用 .env はビルドに不要
+.env
+
+# Symfony側の秘密情報（.env.local）はビルドに含めない
+.env.local
+.env.*.local
