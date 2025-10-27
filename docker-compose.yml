@@ -6,7 +6,9 @@ services:
     ports:
       - "${APP_PORT}:80"
     volumes:
-      - ./app:/var/www/html
+      - ./app:/var/www/html # ← コードはWSLのbind。downしても残る
+      - vendor:/var/www/html/vendor # ← 依存はnamed volumeで高速化
+      - var:/var/www/html/var
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/html/public
     depends_on:
@@ -33,5 +35,15 @@ services:
     depends_on:
       - db
 
+  composer:
+    image: composer:2
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - vendor:/app/vendor
+      - var:/app/var
+
 volumes:
   db_data:
+  vendor:
+  var:
