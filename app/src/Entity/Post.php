@@ -12,9 +12,9 @@ use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ORM\Table(name: 'post', uniqueConstraints: [
-    new ORM\UniqueConstraint(name: 'uniq_post_date', columns: ['date'])
+    new ORM\UniqueConstraint(name: 'uniq_post_date_isdel', columns: ['date', 'is_deleted'])
 ])]
-#[UniqueEntity(fields: ['date'], message: 'この日付の投稿は既に存在します。')]
+#[UniqueEntity(fields: ['date', 'isDeleted'], message: 'この日付の投稿は既に存在します。')]
 class Post
 {
     #[ORM\Id]
@@ -33,6 +33,9 @@ class Post
     // Post : PostSubject = 1 : N
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: PostSubject::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $postSubjects;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private ?bool $isDeleted = false;
 
     public function __construct()
     {
@@ -85,6 +88,18 @@ class Post
         if ($this->postSubjects->removeElement($ps) && $ps->getPost() === $this) {
             $ps->setPost(null);
         }
+        return $this;
+    }
+
+    public function isDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
+
         return $this;
     }
 
