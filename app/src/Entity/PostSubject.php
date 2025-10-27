@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PostSubjectRepository::class)]
 #[ORM\Table(name: 'post_subject')]
 #[ORM\Index(name: 'idx_post_subject_subject', columns: ['subject_id'])]
+#[ORM\Index(name: 'idx_post_subject_post', columns: ['post_id'])]
 class PostSubject
 {
     #[ORM\Id]
@@ -19,12 +20,18 @@ class PostSubject
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $summary = null;
 
+    #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     #[ORM\Column]
     private ?int $minutes = null;
 
     #[ORM\ManyToOne(targetEntity: Subject::class)]
     #[ORM\JoinColumn(name: 'subject_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private ?Subject $subject = null;
+
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'postSubjects')]
+    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    private ?Post $post = null;
 
     public function getId(): ?int
     {
@@ -55,7 +62,7 @@ class PostSubject
         return $this;
     }
 
-    public function getSubject(): ?int
+    public function getSubject(): ?Subject
     {
         return $this->subject;
     }
@@ -65,5 +72,16 @@ class PostSubject
         $this->subject = $subject; 
         return $this; 
     }
+
+    public function getPost(): ?Post 
+    {
+         return $this->post; 
+    }
+
+    public function setPost(Post $post): self 
+    {
+         $this->post = $post; return $this; 
+    }
+
 
 }
