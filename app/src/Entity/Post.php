@@ -11,9 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-#[ORM\Table(name: 'post', uniqueConstraints: [
-    new ORM\UniqueConstraint(name: 'uniq_post_date_isdel', columns: ['date', 'is_deleted'])
-])]
+#[ORM\Table(name: 'post')]
 #[UniqueEntity(fields: ['date', 'isDeleted'], message: 'この日付の投稿は既に存在します。')]
 class Post
 {
@@ -27,8 +25,8 @@ class Post
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: false)]
-    private ?\DateTime $date = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: false)]
+    private ?\DateTimeImmutable $date = null;
 
     // Post : PostSubject = 1 : N
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: PostSubject::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -59,12 +57,12 @@ class Post
         return $this;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(\DateTimeImmutable $date): static
     {
         $this->date = $date;
 
