@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\SubjectRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
+use App\Entity\SubjectStatus;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 #[ORM\Table(name: 'subject')]
@@ -17,9 +19,9 @@ class Subject
     #[ORM\Column(length: 20)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(targetEntity: SubjectStatus::class)]
-    #[ORM\JoinColumn(name: 'status_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
-    private ?int $statusId = null;
+    #[ORM\ManyToOne(targetEntity: SubjectStatus::class)] 
+    #[ORM\JoinColumn(name: 'status_id', referencedColumnName: 'id', nullable: false)]
+    private ?SubjectStatus $status = null;
 
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isDeleted = null;
@@ -41,15 +43,14 @@ class Subject
         return $this;
     }
 
-    public function getStatusId(): ?int
+    public function getStatus(): ?SubjectStatus
     {
-        return $this->statusId;
+        return $this->status;
     }
 
-    public function setStatusId(int $statusId): static
+    public function setStatus(?SubjectStatus $status): self
     {
-        $this->statusId = $statusId;
-
+        $this->status = $status;
         return $this;
     }
 
