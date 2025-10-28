@@ -1,20 +1,41 @@
+# ---- Dockerfile (no .htaccess; use vhost + FallbackResource) ----
 FROM php:8.2-apache
 
-# 必要パッケージ & PHP拡張
+# System deps & PHP extensions
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libzip-dev libonig-dev libxml2-dev \
  && docker-php-ext-install pdo_mysql intl zip opcache \
  && a2enmod rewrite headers
 
-# Apache ドキュメントルートを public/ に
-ARG APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri "s!DocumentRoot /var/www/html!DocumentRoot ${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/000-default.conf \
- && sed -ri "s!<Directory /var/www/html>!<Directory ${APACHE_DOCUMENT_ROOT}>!g" /etc/apache2/apache2.conf \
- && echo '<Directory "/var/www/html/public">\n    AllowOverride All\n    Require all granted\n</Directory>' > /etc/apache2/conf-available/app.conf \
- && a2enconf app
+# Set timezone (PHP & OS)
+ENV TZ=Asia/Tokyo
 
-# Composer を導入
+# Avoid Apache ServerName warning
+RUN echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf \
+ && a2enconf servername
+
+# Provide a dedicated vhost that routes all non-existing paths to index.php
+# (no .htaccess needed; clean URLs work)
+RUN cat >/etc/apache2/sites-available/symfony.conf <<'CONF'
+<VirtualHost *:80>
+    ServerName localhost
+    DocumentRoot /var/www/html/public
+
+    <Directory /var/www/html/public>
+        Require all granted
+        Options FollowSymLinks
+        AllowOverride None
+        FallbackResource /index.php
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+CONF
+RUN a2dissite 000-default && a2ensite symfony
+
+# Composer (from official image)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# タイムゾーンはアプリ側（Symfony）でも Asia/Tokyo を使う
-ENV TZ=Asia/Tokyo
+# App workdir
+WORKDIR /var/www/html
