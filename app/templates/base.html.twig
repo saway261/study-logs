@@ -1,17 +1,56 @@
+{# app/templates/base.html.twig #}
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>学習記録</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% block title %}学習記録 | Study Logs{% endblock %}</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+
+    {# ★ AssetMapper でCSSを読み込む #}
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+
+    {% block javascripts %}
+      {# 既存のJS importmapはそのまま #}
+      {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+  </head>
+
+  {# theme は twig.yaml の globals で提供。接頭辞有無を安全に吸収 #}
+  <body class="{{ theme starts with('theme-') ? theme : 'theme-' ~ theme }}">
+    <header class="site-header">
+      <div class="nav">
+        <div class="brand"><strong>Study&nbsp;Logs</strong></div>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/post/new">New</a>
+          <a href="/calendar">Calendar</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="site-main">
+      <div class="container">
+        {% block flash %}
+          {% for label, messages in app.flashes %}
+            {% for message in messages %}
+              <div class="card" role="status" style="margin-bottom:12px">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endfor %}
         {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
         {% block body %}{% endblock %}
-    </body>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>&copy; {{ "now"|date("Y") }} Study Logs</div>
+        <div><a class="btn" href="#top">Back to top</a></div>
+      </div>
+    </footer>
+  </body>
 </html>
