@@ -1,0 +1,32 @@
+/* ヘッダー＆ナビまわり（既存クラス名を尊重） */
+.site-header {
+  position: sticky; top: 0; z-index: 10;
+  backdrop-filter: saturate(180%) blur(8px);
+  background: color-mix(in oklab, var(--surface), transparent 10%);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav {
+  max-width: var(--container);
+  margin: 0 auto; padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+
+.brand { font-weight: 800; letter-spacing: .02em; font-size: clamp(18px,3vw,20px); }
+
+.nav-links { display: flex; gap: 12px; align-items: center; font-size: .95rem; }
+
+.nav-links a {
+  padding: 6px 10px; border-radius: 8px; border: 1px solid transparent;
+}
+
+.nav-links a:hover {
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--primary-50), transparent 0%);
+  text-decoration: none;
+}
+
+/* モバイルでナビを畳む */
+@media (max-width: 420px) {
+  .nav-links { display: none; }
+}

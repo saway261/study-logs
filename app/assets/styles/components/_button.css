@@ -1,0 +1,33 @@
+.btn {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface), transparent 4%);
+  color: var(--fg); text-decoration: none;
+  transition: background-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.btn:hover { box-shadow: var(--shadow-1); text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { box-shadow: var(--focus-ring); outline: none; }
+
+.btn-primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--primary-700); box-shadow: var(--shadow-2); }
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--primary-600);
+}
+.btn-ghost:hover {
+  background: color-mix(in oklab, var(--primary-50), transparent 0%);
+}
+
+.btn[disabled], .btn.is-disabled {
+  opacity: .6;
+  pointer-events: none;
+}

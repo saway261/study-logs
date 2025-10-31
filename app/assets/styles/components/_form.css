@@ -1,0 +1,21 @@
+/* フォームUI（白×ブルーのフラット） */
+.form-field { margin-bottom: 16px; }
+.form-label { display: inline-block; margin-bottom: 6px; color: var(--muted-fg); font-weight: 600; }
+
+.input, .select, .textarea {
+  width: 100%;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.input:focus, .select:focus, .textarea:focus { outline: none; box-shadow: var(--focus-ring); border-color: var(--primary-600); }
+.input::placeholder, .textarea::placeholder { color: color-mix(in oklab, var(--muted-fg), transparent 30%); }
+.textarea { min-height: 120px; resize: vertical; }
+
+.input.is-invalid, .textarea.is-invalid, .select.is-invalid { border-color: #e5484d; }
+.help-text { margin-top: 6px; color: var(--muted-fg); font-size: .9rem; }
+
