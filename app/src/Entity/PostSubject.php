@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PostSubjectRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PostSubjectRepository::class)]
 #[ORM\Table(name: 'post_subject')]
@@ -67,21 +68,20 @@ class PostSubject
         return $this->subject;
     }
 
-    public function setSubject(Subject $subject): self 
+    public function setSubject(Subject $subject): self
     {
-        $this->subject = $subject; 
-        return $this; 
+        $this->subject = $subject;
+        return $this;
     }
 
-    public function getPost(): ?Post 
+    public function getPost(): ?Post
     {
-         return $this->post; 
+        return $this->post;
     }
 
-    public function setPost(Post $post): self 
+    public function setPost(Post $post): self
     {
-         $this->post = $post; return $this; 
+        $this->post = $post;
+        return $this;
     }
-
-
 }
