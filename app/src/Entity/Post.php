@@ -70,7 +70,10 @@ class Post
     }
 
     /** @return Collection<int, PostSubject> */
-    public function getPostSubjects(): Collection { return $this->postSubjects; }
+    public function getPostSubjects(): Collection
+    {
+        return $this->postSubjects;
+    }
 
     public function addPostSubject(PostSubject $ps): static
     {
@@ -84,7 +87,9 @@ class Post
     public function removePostSubject(PostSubject $ps): static
     {
         if ($this->postSubjects->removeElement($ps) && $ps->getPost() === $this) {
-            $ps->setPost(null);
+            // orphanRemoval: trueにより、removeElementで削除されたエンティティは
+            // flush時に自動的に物理削除される
+            // 明示的な削除処理は不要
         }
         return $this;
     }
@@ -100,5 +105,4 @@ class Post
 
         return $this;
     }
-
 }
