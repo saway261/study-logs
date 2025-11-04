@@ -19,7 +19,9 @@
       <h2>学習中</h2>
       <ul id="studying-list">
         {% for s in studying %}
-          <li>{{ s.name }}</li>
+          <li>
+            <a href="{{ path('subject_edit', {id: s.id}) }}">{{ s.name }}</a>
+          </li>
         {% else %}
           <li>科目はありません。</li>
         {% endfor %}
@@ -30,7 +32,10 @@
       <h2>学習完了</h2>
       <ul>
         {% for s in done %}
-          <li>{{ s.name }}</li>
+          <li>
+            <a href="{{ path('subject_edit', {id: s.id}) }}">{{ s.name }}</a>
+          </li>
+          
         {% else %}
           <li>科目はありません。</li>
         {% endfor %}

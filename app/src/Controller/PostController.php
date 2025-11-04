@@ -17,7 +17,7 @@ use App\Entity\PostSubject;
 #[Route('/posts', name: 'post_')]
 final class PostController extends AbstractController
 {
-    #[Route('/{date}', name: 'show', methods: ['GET'], requirements:['date' => '\d{4}-\d{2}-\d{2}'])]
+    #[Route('/{date}', name: 'show', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
     public function show(string $date, PostRepository $posts): Response
     {
         // 'YYYY-MM-DD' を DateTimeImmutable に
@@ -51,7 +51,7 @@ final class PostController extends AbstractController
 
         return $this->render('post/new.html.twig', [
             // Twig では form_start/form_widget/form_end を使うので createView() を渡す
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 

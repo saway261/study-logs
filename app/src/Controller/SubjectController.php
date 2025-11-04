@@ -12,6 +12,7 @@ use App\Repository\SubjectStatusRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use App\Form\SubjectEditType;
 
 #[Route('/subjects', name: 'subject_')]
 final class SubjectController extends AbstractController
@@ -61,6 +62,45 @@ final class SubjectController extends AbstractController
             $this->addFlash('danger', '同名の学習中（未削除）科目が既に存在します。');
         }
         // PRGで一覧へ（ここで学習中リストに乗っている）
+        return $this->redirectToRoute('subject_index');
+    }
+
+    #[Route('/{id}', name: 'edit', methods: ['GET'])]
+    public function edit(Subject $subject): Response
+    {
+        $form = $this->createForm(SubjectEditType::class, $subject);
+        return $this->render('subject/edit.html.twig', ['form' => $form, 'subject' => $subject]);
+    }
+
+    #[Route('/{id}', name: 'update', methods: ['POST'])]
+    public function update(Subject $subject, Request $req, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(SubjectEditType::class, $subject);
+        $form->handleRequest($req);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            return $this->render('subject/edit.html.twig', ['form' => $form, 'subject' => $subject]);
+        }
+
+        try {
+            $em->flush();
+            $this->addFlash('success', '科目を更新しました。');
+            return $this->redirectToRoute('subject_index');
+        } catch (UniqueConstraintViolationException $e) {
+            $this->addFlash('danger', '同名の学習中（未削除）科目が既に存在します。');
+            return $this->render('subject/edit.html.twig', ['form' => $form, 'subject' => $subject]);
+        }
+    }
+
+    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
+    public function delete(Subject $subject, Request $req, EntityManagerInterface $em): Response
+    {
+        $this->isCsrfTokenValid('subject_delete_' . $subject->getId(), $req->request->get('_token')) || $this->createAccessDeniedException();
+
+        $subject->setIsDeleted(true);
+        $em->flush();
+
+        $this->addFlash('success', '科目を削除しました。');
         return $this->redirectToRoute('subject_index');
     }
 }

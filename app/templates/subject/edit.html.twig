@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}科目編集{% endblock %}
+
+{% block body %}
+{{ form_start(form, { action: path('subject_update', {id: subject.id}), method: 'POST' }) }}
+  {{ form_row(form.name) }}
+  {{ form_row(form.status) }}
+
+  {{ form_row(form.save) }}
+
+  {# 削除は確認ダイアログ + 削除用CSRF #}
+  <input type="hidden" name="_token_delete" value="{{ csrf_token('subject_delete_' ~ subject.id) }}">
+  {{ form_row(form.delete) }}
+
+{{ form_end(form) }}
+
+
+{% endblock %}
