@@ -7,9 +7,52 @@
   {{ form_start(form, { action: path('post_create'), method: 'POST' }) }}
     {{ form_row(form.date) }}
 
-    <div id="subjects">
-      {{ form_row(form.postSubjects) }} {# data-prototype を含む #}
-      <button type="button" id="add-row">＋ 行を追加</button>
+    {# --- subjects table --- #}
+    <div class="subjects-wrap">
+      <table class="subjects-table">
+        <thead>
+          <tr>
+            <th>科目</th>
+            <th>学習時間</th>
+            <th>内容</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody
+          id="subjects-body"
+          {# prototype を tr として埋め込む #}
+          {% if form.postSubjects.vars.prototype is defined %}
+            {% set proto %}
+              <tr class="subject-row" data-index="__name__">
+                {# 子フィールドを素直に描く #}
+                <td>{{ form_widget(form.postSubjects.vars.prototype.subject) }}</td>
+                <td class="col-minutes">{{ form_widget(form.postSubjects.vars.prototype.minutes) }}</td>
+                <td>{{ form_widget(form.postSubjects.vars.prototype.summary) }}</td>
+                <td class="col-actions">
+                  <button type="button" class="btn btn-sm btn-danger js-remove-row">削除</button>
+                </td>
+              </tr>
+            {% endset %}
+            data-prototype="{{ proto|e('html_attr') }}"
+          {% endif %}
+        >
+          {# 既存の行（編集時やバリデーションエラー後） #}
+          {% for child in form.postSubjects %}
+            <tr class="subject-row" data-index="{{ loop.index0 }}">
+              <td>{{ form_widget(child.subject) }}</td>
+              <td class="col-minutes">{{ form_widget(child.minutes) }}</td>
+              <td>{{ form_widget(child.summary) }}</td>
+              <td class="col-actions">
+                <button type="button" class="btn btn-sm btn-danger js-remove-row">削除</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="subjects-toolbar">
+        <button type="button" id="add-row" class="btn btn-secondary">＋ 行を追加</button>
+      </div>
     </div>
 
     {{ form_row(form.content) }}
@@ -17,5 +60,39 @@
     <button type="submit" class="btn btn-primary">保存</button>
   {{ form_end(form) }}
 
-  {# JS で data-prototype を複製して行追加（省略） #}
+  <script>
+    // --- 行追加/削除ロジック ---
+    document.addEventListener('DOMContentLoaded', function() {
+      const tbody = document.getElementById('subjects-body');
+      const addBtn = document.getElementById('add-row');
+      if (!tbody || !addBtn) return;
+
+      // 既存行数から index を開始
+      let index = tbody.querySelectorAll('tr.subject-row').length;
+
+      // 追加
+      addBtn.addEventListener('click', function() {
+        const proto = tbody.getAttribute('data-prototype');
+        if (!proto) {
+          console.error('data-prototype が見つかりません');
+          return;
+        }
+        // __name__ を index で置換
+        const html = proto.replace(/__name__/g, String(index));
+        const temp = document.createElement('tbody'); // 安全にパース
+        temp.innerHTML = html.trim();
+        const row = temp.firstElementChild;
+        tbody.appendChild(row);
+        index++;
+      });
+
+      // 削除（イベント委任）
+      tbody.addEventListener('click', function(e) {
+        const btn = e.target.closest('.js-remove-row');
+        if (!btn) return;
+        const tr = btn.closest('tr.subject-row');
+        if (tr) tr.remove();
+      });
+    });
+  </script>
 {% endblock %}
