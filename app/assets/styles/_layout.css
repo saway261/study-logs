@@ -1,0 +1,23 @@
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); margin: 0; }
+.l-site { display: grid; grid-template-rows: auto 1fr auto; min-height: 100dvh; }
+.l-main { width: min(96%, var(--maxw)); margin: 1.4rem auto; }
+
+.c-header, .c-footer {
+  width: 100%; background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.c-footer { border-top: 1px solid var(--border); border-bottom: none; }
+
+.l-post {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: calc(var(--gap) + .25rem);
+}
+.l-post__header { grid-column: 1 / -1; }
+.l-post__body { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem; }
+.l-post__sidebar { align-self: start; position: sticky; top: 1rem; height: max-content; }
+
+@media (max-width: 960px) {
+  .l-post { grid-template-columns: 1fr; }
+  .l-post__sidebar { position: static; }
+}

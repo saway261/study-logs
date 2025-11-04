@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}学習記録 {{ date }}{% endblock %}
+
+{% block body %}
+<h1>{{ date }} の学習記録</h1>
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<section class="post">
+    <h2>メモ</h2>
+    <p style="white-space: pre-wrap;">{{ post.content }}</p>
+
+    <h2>科目ごとの記録</h2>
+    <ul>
+      {% for ps in post.postSubjects %}
+        <li>
+          <strong>{{ ps.subject.name }}</strong>
+          （{{ ps.minutes|default(0) }} 分）
+          <div>{{ ps.summary }}</div>
+        </li>
+      {% else %}
+        <li>科目の記録はありません。</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  
+{% endblock %}
