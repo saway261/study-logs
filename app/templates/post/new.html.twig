@@ -60,6 +60,13 @@
     <button type="submit" class="btn btn-primary">保存</button>
   {{ form_end(form) }}
 
+  {# datalistで既存科目を提案 #}
+  <datalist id="subject-list">
+      {% for subjectName in subjectNames %}
+          <option value="{{ subjectName }}">
+      {% endfor %}
+  </datalist>
+
   <script>
     // --- 行追加/削除ロジック ---
     document.addEventListener('DOMContentLoaded', function() {

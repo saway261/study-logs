@@ -13,6 +13,10 @@ use App\Entity\Post;
 use App\Form\PostCreateType;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Entity\PostSubject;
+use App\Repository\SubjectStatusRepository;
+use App\Entity\Subject;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
 
 #[Route('/posts', name: 'post_')]
 final class PostController extends AbstractController
@@ -39,49 +43,50 @@ final class PostController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET'])]
-    public function new(SubjectRepository $subjects): Response
+    public function new(SubjectRepository $subjectRepo): Response
     {
-        // 新規用の空エンティティ（Date は PostCreateType の PRE_SET_DATA で「今日」に入る）
         $post = new Post();
-
-        // 1行目を最初から出しておきたい場合は↓（任意）
         $post->addPostSubject(new PostSubject());
 
         $form = $this->createForm(PostCreateType::class, $post);
 
         return $this->render('post/new.html.twig', [
-            // Twig では form_start/form_widget/form_end を使うので createView() を渡す
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'subjectNames' => $subjectRepo->findAllActiveNames(), // datalist用
         ]);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $em,
+        SubjectRepository $subjectRepo
+    ): Response {
         $post = new Post();
         $form = $this->createForm(PostCreateType::class, $post);
-        $form->handleRequest($request); // ← ここで POST データを $post にバインド＆バリデーション
+        $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            // バリデーション NG。ステータスは 200 でも 422 でもお好みで
             return $this->render('post/new.html.twig', [
                 'form' => $form->createView(),
+                'subjectNames' => $subjectRepo->findAllActiveNames(),
             ], new Response('', 422));
         }
 
         try {
-            // DBへ保存（Post ⇔ PostSubject は OneToMany/cascade:persist 前提）
+            // POST_SUBMITイベントで既にSubjectがpersistされているので、そのままflush
             $em->persist($post);
             $em->flush();
         } catch (UniqueConstraintViolationException $e) {
-            // UNIQUE(date, is_deleted) 等に抵触した場合のUX
+            // Subjectの重複エラーの場合も処理
+            // ただし、PostSubjectTypeのPOST_SUBMITで既存を検索しているので、通常は発生しない
+            // Postの日付重複エラーの場合
             $this->addFlash('warning', 'この日付の投稿は既に存在します。既存の詳細に移動しました。');
             return $this->redirectToRoute('post_show', [
                 'date' => $post->getDate()->format('Y-m-d'),
             ], 303);
         }
 
-        // 正常完了：確認（＝公開）画面へ 303 See Other
         return $this->redirectToRoute('post_show', [
             'date' => $post->getDate()->format('Y-m-d'),
         ], 303);
