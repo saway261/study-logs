@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Form\SubjectEditType;
+use App\Form\SubjectDeleteType;
 
 #[Route('/subjects', name: 'subject_')]
 final class SubjectController extends AbstractController
@@ -68,18 +69,42 @@ final class SubjectController extends AbstractController
     #[Route('/{id}', name: 'edit', methods: ['GET'])]
     public function edit(Subject $subject): Response
     {
-        $form = $this->createForm(SubjectEditType::class, $subject);
-        return $this->render('subject/edit.html.twig', ['form' => $form, 'subject' => $subject]);
+        $editForm = $this->createForm(SubjectEditType::class, $subject);
+        $deleteForm = $this->createForm(SubjectDeleteType::class);
+        return $this->render('subject/edit.html.twig', [
+            'editForm' => $editForm,
+            'deleteForm' => $deleteForm,
+            'subject' => $subject,
+        ]);
     }
 
     #[Route('/{id}', name: 'update', methods: ['POST'])]
     public function update(Subject $subject, Request $req, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(SubjectEditType::class, $subject);
-        $form->handleRequest($req);
+        $deleteForm = $this->createForm(SubjectDeleteType::class);
+        $deleteForm->handleRequest($req);
 
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->render('subject/edit.html.twig', ['form' => $form, 'subject' => $subject]);
+        // 削除ボタンが押された場合
+        if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
+            $this->isCsrfTokenValid('subject_delete_' . $subject->getId(), $req->request->get('_token')) || $this->createAccessDeniedException();
+
+            $subject->setIsDeleted(true);
+            $em->flush();
+
+            $this->addFlash('success', '科目を削除しました。');
+            return $this->redirectToRoute('subject_index');
+        }
+
+        // 更新フォームの処理
+        $editForm = $this->createForm(SubjectEditType::class, $subject);
+        $editForm->handleRequest($req);
+
+        if (!$editForm->isSubmitted() || !$editForm->isValid()) {
+            return $this->render('subject/edit.html.twig', [
+                'editForm' => $editForm,
+                'deleteForm' => $deleteForm,
+                'subject' => $subject,
+            ]);
         }
 
         try {
@@ -88,19 +113,11 @@ final class SubjectController extends AbstractController
             return $this->redirectToRoute('subject_index');
         } catch (UniqueConstraintViolationException $e) {
             $this->addFlash('danger', '同名の学習中（未削除）科目が既に存在します。');
-            return $this->render('subject/edit.html.twig', ['form' => $form, 'subject' => $subject]);
+            return $this->render('subject/edit.html.twig', [
+                'editForm' => $editForm,
+                'deleteForm' => $deleteForm,
+                'subject' => $subject,
+            ]);
         }
-    }
-
-    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
-    public function delete(Subject $subject, Request $req, EntityManagerInterface $em): Response
-    {
-        $this->isCsrfTokenValid('subject_delete_' . $subject->getId(), $req->request->get('_token')) || $this->createAccessDeniedException();
-
-        $subject->setIsDeleted(true);
-        $em->flush();
-
-        $this->addFlash('success', '科目を削除しました。');
-        return $this->redirectToRoute('subject_index');
     }
 }

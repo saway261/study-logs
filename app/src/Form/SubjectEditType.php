@@ -27,15 +27,14 @@ final class SubjectEditType extends AbstractType
             ])
             ->add('save', SubmitType::class, [
                 'label' => '保存',
-            ])
-            ->add('delete', SubmitType::class, [
-                'label' => '削除',
-                'attr'  => ['formnovalidate' => true],
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Subject::class]);
+        $resolver->setDefaults([
+            'data_class' => Subject::class,
+            'csrf_protection' => false
+        ]);
     }
 }
