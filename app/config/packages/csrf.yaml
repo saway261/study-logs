@@ -1,11 +1,12 @@
 # Enable stateless CSRF protection for forms and logins/logouts
-framework:
-    form:
-        csrf_protection:
-            token_id: submit
+# CSRF: 認証機能追加したらコメントやめて有効化
+# framework:
+#     form:
+#         csrf_protection:
+#             token_id: submit
 
-    csrf_protection:
-        stateless_token_ids:
-            - submit
-            - authenticate
-            - logout
+#     csrf_protection:
+#         stateless_token_ids:
+#             - submit
+#             - authenticate
+#             - logout

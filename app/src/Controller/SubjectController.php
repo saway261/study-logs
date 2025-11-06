@@ -86,7 +86,6 @@ final class SubjectController extends AbstractController
 
         // 削除ボタンが押された場合
         if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
-            $this->isCsrfTokenValid('subject_delete_' . $subject->getId(), $req->request->get('_token')) || $this->createAccessDeniedException();
 
             $subject->setIsDeleted(true);
             $em->flush();

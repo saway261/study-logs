@@ -33,8 +33,7 @@ final class SubjectEditType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Subject::class,
-            'csrf_protection' => false
+            'data_class' => Subject::class
         ]);
     }
 }

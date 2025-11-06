@@ -114,7 +114,7 @@ final class PostSubjectType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => PostSubject::class,
+            'data_class' => PostSubject::class
         ]);
     }
 }

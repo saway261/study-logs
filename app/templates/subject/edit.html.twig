@@ -11,7 +11,6 @@
 {{ form_end(editForm) }}
 
 {{ form_start(deleteForm, { action: path('subject_update', {id: subject.id}), method: 'POST' }) }}
-  <input type="hidden" name="_token" value="{{ csrf_token('subject_delete_' ~ subject.id) }}">
   {{ form_row(deleteForm.delete) }}
 {{ form_end(deleteForm) }}
 

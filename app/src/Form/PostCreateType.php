@@ -73,7 +73,6 @@ final class PostCreateType extends AbstractType
         // このフォームは Post エンティティにバインド
         $resolver->setDefaults([
             'data_class' => Post::class,
-            'csrf_protection' => true,
         ]);
     }
 }

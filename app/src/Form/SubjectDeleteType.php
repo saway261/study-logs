@@ -22,8 +22,7 @@ final class SubjectDeleteType extends AbstractType
     {
         $resolver->setDefaults([
             // 削除専用ボタンフォームのためエンティティにバインドしない
-            'data_class' => null,
-            'csrf_protection' => false, // CSRFはテンプレート側で既存ポリシーに合わせて手動埋め込み
+            'data_class' => null
         ]);
     }
 }
