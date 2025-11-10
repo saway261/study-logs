@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <h1>科目管理</h1>
+
+  <section class="add-subject">
+    <h2>科目を追加</h2>
+    {{ form_start(form, { action: path('subject_create'), method: 'POST' }) }}
+      {{ form_errors(form) }}
+      <div class="row">
+        {{ form_row(form.name) }}
+        <button type="submit" class="btn btn-primary">追加</button>
+      </div>
+    {{ form_end(form) }}
+  </section>
+
+  <section class="lists">
+    <div class="col">
+      <h2>学習中</h2>
+      <ul id="studying-list">
+        {% for s in studying %}
+          <li>
+            <a href="{{ path('subject_edit', {id: s.id}) }}">{{ s.name }}</a>
+          </li>
+        {% else %}
+          <li>科目はありません。</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="col">
+      <h2>学習完了</h2>
+      <ul>
+        {% for s in done %}
+          <li>
+            <a href="{{ path('subject_edit', {id: s.id}) }}">{{ s.name }}</a>
+          </li>
+          
+        {% else %}
+          <li>科目はありません。</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

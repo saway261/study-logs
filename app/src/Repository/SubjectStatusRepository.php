@@ -6,38 +6,26 @@ use App\Entity\SubjectStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<SubjectStatus>
- */
-class SubjectStatusRepository extends ServiceEntityRepository
+final class SubjectStatusRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, SubjectStatus::class);
     }
 
-    //    /**
-    //     * @return SubjectStatus[] Returns an array of SubjectStatus objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * 「学習中（id=1）」を取得。
+     */
+    public function getStudying(): SubjectStatus
+    {
+        return $this->getEntityManager()->getReference(SubjectStatus::class, 1);
+    }
 
-    //    public function findOneBySomeField($value): ?SubjectStatus
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * 「学習完了（id=2）」を取得。
+     */
+    public function getDone(): SubjectStatus
+    {
+        return $this->getEntityManager()->getReference(SubjectStatus::class, 2);
+    }
 }

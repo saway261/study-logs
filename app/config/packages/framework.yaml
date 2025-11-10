@@ -1,6 +1,12 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
+    http_method_override: true
+
+    # CSRF:認証機能追加したら対策有効化のため削除
+    csrf_protection: false
+    form:
+        csrf_protection: false
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true

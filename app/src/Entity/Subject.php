@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\SubjectRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\DBAL\Types\Types;
 use App\Entity\SubjectStatus;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
@@ -19,12 +18,12 @@ class Subject
     #[ORM\Column(length: 20)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(targetEntity: SubjectStatus::class)] 
+    #[ORM\ManyToOne(targetEntity: SubjectStatus::class)]
     #[ORM\JoinColumn(name: 'status_id', referencedColumnName: 'id', nullable: false)]
     private ?SubjectStatus $status = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $isDeleted = null;
+    private ?bool $isDeleted = false;
 
     public function getId(): ?int
     {
