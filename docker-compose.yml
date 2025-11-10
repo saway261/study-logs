@@ -11,6 +11,11 @@ services:
       - var:/var/www/html/var
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/html/public
+      XDEBUG_MODE: debug
+      XDEBUG_START_WITH_REQUEST: yes
+      XDEBUG_CLIENT_PORT: 9003
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - db
 
