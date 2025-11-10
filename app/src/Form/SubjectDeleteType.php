@@ -22,7 +22,8 @@ final class SubjectDeleteType extends AbstractType
     {
         $resolver->setDefaults([
             // 削除専用ボタンフォームのためエンティティにバインドしない
-            'data_class' => null
+            'data_class' => null,
+            'method' => 'DELETE'
         ]);
     }
 }

@@ -1,4 +1,5 @@
 # Enable stateless CSRF protection for forms and logins/logouts
 framework:
     csrf_protection:
-# CSRF: 認証機能追加したらコメント戻す        check_header: true
+        check_header: false
+# CSRF: 認証機能追加したらコメント戻す

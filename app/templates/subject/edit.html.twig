@@ -3,14 +3,19 @@
 {% block title %}科目編集{% endblock %}
 
 {% block body %}
-{{ form_start(editForm, { action: path('subject_update', {id: subject.id}), method: 'POST' }) }}
+{# 編集フォーム #}
+{{ form_start(editForm, {
+  action: path('subject_update', {id: subject.id})})
+}}
   {{ form_row(editForm.name) }}
   {{ form_row(editForm.status) }}
-
   {{ form_row(editForm.save) }}
 {{ form_end(editForm) }}
 
-{{ form_start(deleteForm, { action: path('subject_update', {id: subject.id}), method: 'POST' }) }}
+{# 削除フォーム #}
+{{ form_start(deleteForm, {
+  action: path('subject_delete', {id: subject.id})
+}) }}
   {{ form_row(deleteForm.delete) }}
 {{ form_end(deleteForm) }}
 

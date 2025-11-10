@@ -33,7 +33,8 @@ final class SubjectEditType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Subject::class
+            'data_class' => Subject::class,
+            'method' => 'PUT'
         ]);
     }
 }

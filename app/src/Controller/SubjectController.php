@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Form\SubjectEditType;
 use App\Form\SubjectDeleteType;
+use Symfony\Component\Form\FormError;
 
 #[Route('/subjects', name: 'subject_')]
 final class SubjectController extends AbstractController
@@ -60,13 +61,13 @@ final class SubjectController extends AbstractController
             $em->flush();
             $this->addFlash('success', '科目を追加しました。');
         } catch (UniqueConstraintViolationException) {
-            $this->addFlash('danger', '同名の学習中（未削除）科目が既に存在します。');
+            $this->addFlash('danger', '同名の学習中・学習完了科目が既に存在します。');
         }
         // PRGで一覧へ（ここで学習中リストに乗っている）
         return $this->redirectToRoute('subject_index');
     }
 
-    #[Route('/{id}', name: 'edit', methods: ['GET'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET'])]
     public function edit(Subject $subject): Response
     {
         $editForm = $this->createForm(SubjectEditType::class, $subject);
@@ -78,27 +79,15 @@ final class SubjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'update', methods: ['POST'])]
+    #[Route('/{id}', name: 'update', methods: ['PUT'])]
     public function update(Subject $subject, Request $req, EntityManagerInterface $em): Response
     {
-        $deleteForm = $this->createForm(SubjectDeleteType::class);
-        $deleteForm->handleRequest($req);
 
-        // 削除ボタンが押された場合
-        if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
-
-            $subject->setIsDeleted(true);
-            $em->flush();
-
-            $this->addFlash('success', '科目を削除しました。');
-            return $this->redirectToRoute('subject_index');
-        }
-
-        // 更新フォームの処理
         $editForm = $this->createForm(SubjectEditType::class, $subject);
         $editForm->handleRequest($req);
 
         if (!$editForm->isSubmitted() || !$editForm->isValid()) {
+            $deleteForm = $this->createForm(SubjectDeleteType::class);
             return $this->render('subject/edit.html.twig', [
                 'editForm' => $editForm,
                 'deleteForm' => $deleteForm,
@@ -111,12 +100,40 @@ final class SubjectController extends AbstractController
             $this->addFlash('success', '科目を更新しました。');
             return $this->redirectToRoute('subject_index');
         } catch (UniqueConstraintViolationException $e) {
-            $this->addFlash('danger', '同名の学習中（未削除）科目が既に存在します。');
-            return $this->render('subject/edit.html.twig', [
+
+            if ($editForm->has('name')) {
+                $editForm->get('name')->addError(new FormError('同名の学習中・学習完了科目が既に存在します。'));
+            } else {
+                // 念のためフォーム全体にもエラーを一つ
+                $editForm->addError(new FormError('同名の学習中・学習完了科目が既に存在します。'));
+            }
+            $deleteForm = $this->createForm(SubjectDeleteType::class);
+            $response = $this->render('subject/edit.html.twig', [
                 'editForm' => $editForm,
                 'deleteForm' => $deleteForm,
                 'subject' => $subject,
             ]);
+            $response->setStatusCode(Response::HTTP_CONFLICT);
+            return $response;
         }
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(Subject $subject, Request $req, EntityManagerInterface $em): Response
+    {
+
+        $deleteForm = $this->createForm(SubjectDeleteType::class);
+        $deleteForm->handleRequest($req);
+
+        if (!$deleteForm->isSubmitted() || !$deleteForm->isValid()) {
+            $this->addFlash('danger', '削除に失敗しました。');
+            return $this->redirectToRoute('subject_edit', ['id' => $subject->getId()]);
+        }
+
+        $subject->setIsDeleted(true);
+        $em->flush();
+
+        $this->addFlash('success', '科目を削除しました。');
+        return $this->redirectToRoute('subject_index');
     }
 }
