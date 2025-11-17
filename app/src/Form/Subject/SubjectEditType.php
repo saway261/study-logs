@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Subject;
 
 use App\Entity\Subject;
 use App\Entity\SubjectStatus;

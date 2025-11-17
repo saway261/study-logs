@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Subject;
 
 use App\Entity\Subject;
-use App\Entity\SubjectStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

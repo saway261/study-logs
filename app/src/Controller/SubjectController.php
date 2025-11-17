@@ -6,14 +6,14 @@ use App\Repository\SubjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use App\Form\SubjectCreateType;
-use App\Entity\Subject;
-use App\Repository\SubjectStatusRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use App\Form\SubjectEditType;
-use App\Form\SubjectDeleteType;
+use App\Entity\Subject;
+use App\Repository\SubjectStatusRepository;
+use App\Form\Subject\SubjectCreateType;
+use App\Form\Subject\SubjectEditType;
+use App\Form\Subject\SubjectDeleteType;
 use Symfony\Component\Form\FormError;
 
 #[Route('/subjects', name: 'subject_')]
