@@ -35,7 +35,7 @@ final class PostCreateType extends AbstractType
 
         // --- 科目記録（繰り返し可能な行） ---
         $builder->add('postSubjects', CollectionType::class, [
-            'entry_type'    => PostSubjectType::class,
+            'entry_type'    => PostSubjectCreateType::class,
             'entry_options' => ['label' => false],
             'allow_add'     => true,   // 「＋」で追加
             'allow_delete'  => true,   // 行削除も可能に
