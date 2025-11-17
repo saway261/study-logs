@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}学習記録 {{ date }}{% endblock %}
+
+{% block body %}
+<h1>学習記録 {{ date }} の編集</h1>
+
+{# 編集フォーム #}
+{{ form_start(editForm, {
+  action: path('post_update', {date: post.date | date('Y-m-d')})})
+}}
+  
+  <div class="subjects-wrap">
+      <table class="subjects-table">
+        <thead>
+          <tr>
+            <th>科目</th>
+            <th>学習時間</th>
+            <th>内容</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody
+          id="subjects-body"
+          {% if editForm.postSubjects.vars.prototype is defined %}
+            {% set proto %}
+              <tr class="subject-row" data-index="__name__">
+                <td>{{ form_widget(editForm.postSubjects.vars.prototype.subject) }}</td>
+                <td class="col-minutes">{{ form_widget(editForm.postSubjects.vars.prototype.minutes) }}</td>
+                <td>{{ form_widget(editForm.postSubjects.vars.prototype.summary) }}</td>
+                <td class="col-actions">
+                  <button type="button" class="btn btn-sm btn-danger js-remove-row">削除</button>
+                </td>
+              </tr>
+            {% endset %}
+            data-prototype="{{ proto|e('html_attr') }}"
+          {% endif %}
+        >
+          {# 既存の子行 #}
+          {% for child in editForm.postSubjects %}
+            <tr class="subject-row" data-index="{{ loop.index0 }}">
+              <td>{{ form_widget(child.subject) }}</td>
+              <td class="col-minutes">{{ form_widget(child.minutes) }}</td>
+              <td>{{ form_widget(child.summary) }}</td>
+              <td class="col-actions">
+                <button type="button" class="btn btn-sm btn-danger js-remove-row">削除</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="subjects-toolbar">
+        <button type="button" id="add-row" class="btn btn-secondary">＋ 行を追加</button>
+      </div>
+    </div>
+
+  {{ form_row(editForm.content) }}
+  {{ form_row(editForm.save) }}
+{{ form_end(editForm) }}
+
+{# 削除フォーム #}
+{{ form_start(deleteForm, {
+  action: path('post_delete', {date: post.date | date('Y-m-d')})
+}) }}
+  {{ form_row(deleteForm.delete) }}
+{{ form_end(deleteForm) }}
+
+{# datalist（new と同様、科目候補を使い回す） #}
+  <datalist id="subject-list">
+    {% for subjectName in subjectNames %}
+      <option value="{{ subjectName }}">
+    {% endfor %}
+  </datalist>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tbody  = document.getElementById('subjects-body');
+    const addBtn = document.getElementById('add-row');
+    if (!tbody || !addBtn) {
+      return;
+    }
+
+    // 既存行数から index を開始
+    let index = tbody.querySelectorAll('tr.subject-row').length;
+
+    // 行追加
+    addBtn.addEventListener('click', function() {
+      const proto = tbody.getAttribute('data-prototype');
+      if (!proto) {
+        // 開発中に気づけるように、エラーだけは残しておくのもアリ
+        console.error('data-prototype が見つかりません');
+        return;
+      }
+
+      const html = proto.replace(/__name__/g, String(index));
+      const temp = document.createElement('tbody');
+      temp.innerHTML = html.trim();
+      const row = temp.firstElementChild;
+      if (row) {
+        tbody.appendChild(row);
+        index++;
+      }
+    });
+
+    // 行削除（イベント委譲）
+    tbody.addEventListener('click', function(e) {
+      const btn = e.target.closest('.js-remove-row');
+      if (!btn) return;
+      const tr = btn.closest('tr.subject-row');
+      if (tr) tr.remove();
+    });
+  });
+</script>
+
+
+
+{% endblock %}
