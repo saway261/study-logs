@@ -10,8 +10,6 @@
 </style>
 
 <section class="post">
-    <h2>メモ</h2>
-    <p style="white-space: pre-wrap;">{{ post.content }}</p>
 
     <h2>科目ごとの記録</h2>
     <ul>
@@ -25,7 +23,11 @@
         <li>科目の記録はありません。</li>
       {% endfor %}
     </ul>
+    
+    <h2>メモ</h2>
+    <p style="white-space: pre-wrap;">{{ post.content }}</p>
   </section>
 
+<a href="{{ path('post_edit', { date: date }) }}" class="btn btn-primary">編集</a>
   
 {% endblock %}
