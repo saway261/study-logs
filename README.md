@@ -88,6 +88,21 @@ sequenceDiagram
     DB -->> C: POSTを返す
     C ->> C: GET /posts/{date}
     C -->> Browser: 200 OK (新規作成した日報データが返る)
+
+    Note over Browser, DB: 日報更新
+    Browser ->> C: GET /posts/{date}/edit
+    C -->> Browser: 日報更新フォーム
+    Browser ->> C: PUT /posts/{date}<br>フォームを送信
+    C ->> DB: POSTを更新
+    DB -->> C: POSTを返す
+    C -->> Browser: 200 OK(更新後の日報データが返る)
+
+    Note over Browser, DB: 日報削除(論理)
+    Browser ->> C: GET /posts/{date}/edit
+    C -->> Browser: 日報更新フォーム
+    Browser ->> C: DELETE /posts/{date}<br>フォームを送信
+    C ->> DB: POSTを更新
+    C -->> Browser: 200 OK<br>(現状では「記事が見つかりません」というメッセージが帰る)
 ```
 
 
@@ -137,6 +152,6 @@ sequenceDiagram
 ```
 
 ## 今後の課題
-- 日報編集・削除機能の実装
+- トップページ（カレンダービュー）の作成
 - posts/{date}: {date}が形式不正、NotFoundの際の例外ハンドリング
 - 認証機能実装およびCSRF対策有効化
