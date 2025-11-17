@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Post;
 
 use App\Entity\PostSubject;
 use App\Repository\SubjectRepository;

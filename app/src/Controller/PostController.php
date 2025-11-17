@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\PostSubject;
-use App\Form\PostCreateType;
-use App\Form\PostDeleteType;
-use App\Form\PostEditType;
+use App\Form\Post\PostCreateType;
+use App\Form\Post\PostDeleteType;
+use App\Form\Post\PostEditType;
 use App\Repository\PostRepository;
 use App\Repository\SubjectRepository;
 use DateTimeImmutable;
